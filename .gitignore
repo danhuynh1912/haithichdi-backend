@@ -1,0 +1,31 @@
+frontend/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+pip-wheel-metadata/
+*.egg-info/
+.pytest_cache/
+
+# Django
+*.log
+local_settings.py
+db.sqlite3
+staticfiles/
+media/
+
+# Env
+.env
+.venv
+env/
+venv/
+.env.*
+
+# OS
+.DS_Store
+
+# Docker
+docker-compose.override.yml
