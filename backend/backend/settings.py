@@ -94,6 +94,7 @@ AUTH_USER_MODEL = "accounts.User"
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
+    "http://localhost:3001",
 ]
 
 USE_S3 = os.environ.get("USE_S3", "0") == "1"

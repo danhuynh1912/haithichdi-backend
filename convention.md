@@ -5,3 +5,4 @@
 - SDK-like code
 - Each function has only one responsibility
 - Business code & UI code are separated
+- Don't forget to responsive when writing code
