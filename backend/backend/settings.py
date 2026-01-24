@@ -107,9 +107,10 @@ if USE_S3:
     )
     AWS_S3_REGION_NAME = os.environ.get("AWS_S3_REGION_NAME", "us-east-1")
     AWS_S3_ADDRESSING_STYLE = "path"
-    AWS_QUERYSTRING_AUTH = False
     AWS_S3_SECURE_URLS = False
     AWS_S3_USE_SSL = False
+    AWS_QUERYSTRING_AUTH = False
+    AWS_S3_FILE_OVERWRITE = False
     AWS_S3_URL_PROTOCOL = "http:"
     public_host = AWS_S3_PUBLIC_ENDPOINT_URL.replace("http://", "").replace(
         "https://", ""
@@ -122,6 +123,7 @@ if USE_S3:
                 "endpoint_url": AWS_S3_ENDPOINT_URL,
                 "region_name": AWS_S3_REGION_NAME,
                 "addressing_style": AWS_S3_ADDRESSING_STYLE,
+                "custom_domain": AWS_S3_CUSTOM_DOMAIN,
             },
         },
         "staticfiles": {

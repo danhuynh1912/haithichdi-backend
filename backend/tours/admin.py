@@ -41,5 +41,5 @@ class TourImageAdmin(admin.ModelAdmin):
 
 @admin.register(Location)
 class LocationAdmin(admin.ModelAdmin):
-    list_display = ("name", "elevation_m")
+    list_display = ("name", "elevation_m", "image", "image_url")
     search_fields = ("name",)

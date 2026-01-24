@@ -1,8 +1,8 @@
 from django.utils import timezone
 from rest_framework.generics import ListAPIView
 
-from .models import Tour
-from .serializers import TourHotSerializer
+from .models import Location, Tour
+from .serializers import LocationSerializer, TourHotSerializer
 
 
 class HotTourListView(ListAPIView):
@@ -21,3 +21,8 @@ class HotTourListView(ListAPIView):
             .prefetch_related("images")
             .order_by("start_date", "end_date", "id")[:10]
         )
+
+
+class LocationListView(ListAPIView):
+    queryset = Location.objects.all()
+    serializer_class = LocationSerializer

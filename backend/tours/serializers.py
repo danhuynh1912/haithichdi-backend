@@ -1,12 +1,19 @@
 from rest_framework import serializers
 
-from .models import Tour
+from .models import Location, Tour
 
 
-class LocationSerializer(serializers.Serializer):
-    id = serializers.IntegerField()
-    name = serializers.CharField()
-    elevation_m = serializers.IntegerField()
+class LocationSerializer(serializers.ModelSerializer):
+    full_image_url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Location
+        fields = ("id", "name", "elevation_m", "description", "full_image_url")
+
+    def get_full_image_url(self, obj: Location) -> str | None:
+        if obj.image:
+            return obj.image.url
+        return obj.image_url or None
 
 
 class TourHotSerializer(serializers.ModelSerializer):

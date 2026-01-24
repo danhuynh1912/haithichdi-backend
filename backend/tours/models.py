@@ -42,6 +42,9 @@ class Tour(models.Model):
 class Location(models.Model):
     name = models.CharField(max_length=200, unique=True)
     elevation_m = models.PositiveIntegerField()
+    image = models.ImageField(upload_to="locations/images/", null=True, blank=True)
+    image_url = models.URLField(blank=True, help_text="Fallback/External URL")
+    description = models.TextField(blank=True)
 
     class Meta:
         ordering = ["name"]
@@ -61,7 +64,7 @@ class TourImage(models.Model):
         ordering = ["sort_order", "id"]
 
     def __str__(self) -> str:
-        return f"{self.tour.title} - {self.image_url}"
+        return f"{self.tour.title} - {self.image_url or self.image.name}"
 
 
 class Booking(models.Model):
