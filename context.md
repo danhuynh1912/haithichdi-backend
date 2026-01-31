@@ -12,6 +12,14 @@ This project builds a management and booking system for a Trekking Tours Provide
 - **Frontend:** Next.js 15 (App Router), TypeScript, Tailwind CSS.
 - **Infra:** Docker & Docker Compose.
 
+### Latest Changes
+- Location detail modal is now full-screen, shows the location's quotation PDF (if available) instead of the image, and removes the framer-motion morph animation.
+- Location API now exposes `quotation_file_url`; frontend Location type updated accordingly.
+- Opening a location detail sets `?name={slug}` in the URL; reloading with that query auto-focuses the matching location card and reopens the modal.
+- PDF panel width set to 50% of the screen within the location detail modal.
+- PDF viewer now hides the default sidebar/toolbar via URL params.
+- Modal overlay/content now animates in/out with a subtle scale + fade.
+
 ### Implementation Details (Codebase)
 
 #### 1. Backend (Django)

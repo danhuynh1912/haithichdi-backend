@@ -44,6 +44,12 @@ class Location(models.Model):
     elevation_m = models.PositiveIntegerField()
     image = models.ImageField(upload_to="locations/images/", null=True, blank=True)
     image_url = models.URLField(blank=True, help_text="Fallback/External URL")
+    quotation_file = models.FileField(
+        upload_to="locations/quotations/",
+        null=True,
+        blank=True,
+        help_text="Upload PDF quotation file",
+    )
     description = models.TextField(blank=True)
 
     class Meta:
