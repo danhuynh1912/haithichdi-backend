@@ -74,6 +74,23 @@ class TourImage(models.Model):
 
 
 class Booking(models.Model):
+    medal_name = models.CharField(
+        max_length=200,
+        blank=True,
+        null=True,
+        help_text="Tên in trên huy chương",
+    )
+    dob = models.DateField(
+        blank=True,
+        null=True,
+        help_text="Ngày tháng năm sinh",
+    )
+    citizen_id = models.CharField(
+        max_length=50,
+        blank=True,
+        null=True,
+        help_text="Căn cước công dân",
+    )
     class Status(models.TextChoices):
         PENDING = "pending", "Pending"
         CONFIRMED = "confirmed", "Confirmed"

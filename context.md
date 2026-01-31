@@ -19,6 +19,15 @@ This project builds a management and booking system for a Trekking Tours Provide
 - PDF panel width set to 50% of the screen within the location detail modal.
 - PDF viewer now hides the default sidebar/toolbar via URL params.
 - Modal overlay/content now animates in/out with a subtle scale + fade.
+- Backend adds `GET /api/tours/<id>/` and `POST /api/bookings/` (with validation on tour active/slots and duplicate phone).
+- New booking page at `/tour-booking/[tourId]`: left PDF preview (50% width, toolbar hidden), right booking form using React 19 hooks (`useActionState`, `useFormStatus`) posting to create a Booking.
+- Clicking a tour inside the location detail modal navigates to `/tour-booking/{tourId}`.
+- Tour booking page now fetches tour detail via React Query (`useQuery`).
+- Added a back arrow button in the booking page header to return to the previous page.
+- Created reusable `BookingFlowHeader` component for breadcrumb/back UI in booking flow; booking page uses it.
+- Added SEO helpers (`lib/seo.ts`) and root metadata template (title template, OG/Twitter, canonical). Home and Locations pages now export metadata via server files. Tour booking page uses server `generateMetadata` to set dynamic title/OG per tour (fallback when API unreachable).
+- Header is now fixed (sticky top) with blurred gradient background (from black to transparent); page content padded to avoid overlap.
+- Booking form now requires medal name, date of birth, and citizen ID; backend Booking model/serializer/API accept and validate these fields.
 
 ### Implementation Details (Codebase)
 

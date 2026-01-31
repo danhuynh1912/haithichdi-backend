@@ -28,8 +28,16 @@ class TourAdmin(admin.ModelAdmin):
 
 @admin.register(Booking)
 class BookingAdmin(admin.ModelAdmin):
-    list_display = ("full_name", "phone", "tour", "status", "created_at")
-    search_fields = ("full_name", "phone", "tour__title")
+    list_display = (
+        "full_name",
+        "phone",
+        "tour",
+        "status",
+        "created_at",
+        "medal_name",
+        "citizen_id",
+    )
+    search_fields = ("full_name", "phone", "citizen_id", "tour__title", "medal_name")
     list_filter = ("status",)
 
 

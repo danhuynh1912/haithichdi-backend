@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Location, Tour
+from .models import Booking, Location, Tour
 
 
 class LocationSerializer(serializers.ModelSerializer):
@@ -55,3 +55,55 @@ class TourHotSerializer(serializers.ModelSerializer):
         if image.image:
             return image.image.url
         return image.image_url or None
+
+
+class BookingCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Booking
+        fields = (
+            "id",
+            "tour",
+            "full_name",
+            "phone",
+            "email",
+            "note",
+            "medal_name",
+            "dob",
+            "citizen_id",
+            "status",
+        )
+        read_only_fields = ("id", "status")
+
+    def validate_tour(self, tour: Tour) -> Tour:
+        if not tour.is_active:
+            raise serializers.ValidationError("Tour is not active.")
+        if tour.slots_left <= 0:
+            raise serializers.ValidationError("Tour is fully booked.")
+        return tour
+
+    def validate(self, attrs):
+        tour = attrs.get("tour")
+        phone = attrs.get("phone")
+        medal_name = attrs.get("medal_name")
+        dob = attrs.get("dob")
+        citizen_id = attrs.get("citizen_id")
+
+        missing = []
+        if not medal_name:
+          missing.append("medal_name")
+        if not dob:
+          missing.append("dob")
+        if not citizen_id:
+          missing.append("citizen_id")
+        if missing:
+          raise serializers.ValidationError(
+              {field: "Trường này là bắt buộc." for field in missing}
+          )
+
+        if tour and phone:
+            exists = Booking.objects.filter(tour=tour, phone=phone).exists()
+            if exists:
+                raise serializers.ValidationError(
+                    {"phone": "Số điện thoại đã đăng ký tour này."}
+                )
+        return attrs

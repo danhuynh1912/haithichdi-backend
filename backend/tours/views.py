@@ -1,8 +1,12 @@
 from django.utils import timezone
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView
 
 from .models import Location, Tour
-from .serializers import LocationSerializer, TourHotSerializer
+from .serializers import (
+    BookingCreateSerializer,
+    LocationSerializer,
+    TourHotSerializer,
+)
 
 
 class HotTourListView(ListAPIView):
@@ -37,3 +41,12 @@ class TourListView(ListAPIView):
         if location_id:
             queryset = queryset.filter(location_id=location_id)
         return queryset.prefetch_related("images").select_related("location")
+
+
+class TourDetailView(RetrieveAPIView):
+    serializer_class = TourHotSerializer
+    queryset = Tour.objects.filter(is_active=True).prefetch_related("images").select_related("location")
+
+
+class BookingCreateView(CreateAPIView):
+    serializer_class = BookingCreateSerializer
