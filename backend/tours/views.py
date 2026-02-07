@@ -1,3 +1,7 @@
+import unicodedata
+
+from django.db.models import Func, Q, TextField
+from django.db.models.functions import Lower
 from django.utils import timezone
 from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView
 
@@ -36,11 +40,45 @@ class TourListView(ListAPIView):
     serializer_class = TourHotSerializer
 
     def get_queryset(self):
-        queryset = Tour.objects.filter(is_active=True).order_by("start_date")
-        location_id = self.request.query_params.get("location_id")
-        if location_id:
-            queryset = queryset.filter(location_id=location_id)
+        queryset = Tour.objects.filter(is_active=True).annotate(
+            title_unaccent=Lower(Unaccent("title")),
+            location_unaccent=Lower(Unaccent("location__name")),
+        )
+
+        location_ids = self.request.query_params.get("location_id")
+        if location_ids:
+            ids = [int(x) for x in location_ids.split(",") if x.strip().isdigit()]
+            if ids:
+                queryset = queryset.filter(location_id__in=ids)
+
+        search = self.request.query_params.get("search")
+        if search and search.strip():
+            term = _normalize_search(search)
+            queryset = queryset.filter(
+                Q(title_unaccent__icontains=term) | Q(location_unaccent__icontains=term)
+            )
+
+        ordering = self.request.query_params.get("ordering")
+        if ordering in {"start_date", "-start_date"}:
+            queryset = queryset.order_by(ordering)
+        else:
+            queryset = queryset.order_by("start_date")
+
         return queryset.prefetch_related("images").select_related("location")
+
+
+def _normalize_search(value: str) -> str:
+    """Lowercase and strip accents for lenient matching."""
+    normalized = unicodedata.normalize("NFD", value)
+    without_accents = "".join(ch for ch in normalized if unicodedata.category(ch) != "Mn")
+    return without_accents.lower().strip()
+
+
+class Unaccent(Func):
+    """Database UNACCENT function wrapper."""
+
+    function = "UNACCENT"
+    output_field = TextField()
 
 
 class TourDetailView(RetrieveAPIView):

@@ -10,6 +10,7 @@ admin.site.index_title = "Haithichdi administration"
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/", include("tours.urls")),
+    path("api/", include("accounts.urls")),
 ]
 
 if settings.DEBUG:

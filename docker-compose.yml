@@ -52,7 +52,8 @@ services:
       - "3000:3000"
     volumes:
       - ./frontend:/app
-      - /app/node_modules
+      - /app/node_modules    # GIẢI PHÁP ĐÂY: Giữ lại node_modules của Docker
+      - /app/.next
     depends_on:
       - backend
 

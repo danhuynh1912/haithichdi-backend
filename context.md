@@ -28,6 +28,8 @@ This project builds a management and booking system for a Trekking Tours Provide
 - Added SEO helpers (`lib/seo.ts`) and root metadata template (title template, OG/Twitter, canonical). Home and Locations pages now export metadata via server files. Tour booking page uses server `generateMetadata` to set dynamic title/OG per tour (fallback when API unreachable).
 - Header is now fixed (sticky top) with blurred gradient background (from black to transparent); page content padded to avoid overlap.
 - Booking form now requires medal name, date of birth, and citizen ID; backend Booking model/serializer/API accept and validate these fields.
+- Added Tours listing page with filters (locations, upcoming sort), debounced search, shared tour fetching hook, and reusable TourCard; header nav links to /tours.
+- All tours API calls now go through `tourService` (list, detail, hot, bookings), `useTours` reuses the service for SDK-like layering.
 
 ### Implementation Details (Codebase)
 

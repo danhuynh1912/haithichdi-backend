@@ -15,6 +15,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.postgres",
     "corsheaders",
     "rest_framework",
     "storages",
@@ -113,6 +114,9 @@ if USE_S3:
     AWS_QUERYSTRING_AUTH = False
     AWS_S3_FILE_OVERWRITE = False
     AWS_S3_URL_PROTOCOL = "http:"
+    AWS_S3_OBJECT_PARAMETERS = {
+        'ACL': 'public-read',
+    }
     public_host = AWS_S3_PUBLIC_ENDPOINT_URL.replace("http://", "").replace(
         "https://", ""
     )

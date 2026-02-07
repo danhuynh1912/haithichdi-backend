@@ -1,0 +1,1 @@
+docker compose --env-file ./frontend/.env up -d --build
