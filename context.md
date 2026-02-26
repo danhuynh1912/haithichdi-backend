@@ -13,6 +13,9 @@ This project builds a management and booking system for a Trekking Tours Provide
 - **Infra:** Docker & Docker Compose.
 
 ### Latest Changes
+- Removed `frontend/yarn.lock` to standardize dependency lock strategy on npm (`package-lock.json`) and avoid mixed package-manager lockfiles.
+- Removed Linux-only frontend package entries (`lightningcss-*`, `@tailwindcss/oxide-*`) from `frontend/package.json` to fix `EBADPLATFORM` on macOS during install.
+- Prepared frontend for Next.js 15 migration: aligned package versions, updated route params typing for App Router, fixed strict TypeScript issues, and resolved ESLint blocking errors.
 - Rewrote `frontend/README.md` and `backend/README.md` in English for recruiter-facing technical review.
 - Added comprehensive recruiter-facing README documentation for both `frontend/` and `backend/`, covering context, architecture, tech stack, setup, API contracts, and engineering trade-offs.
 - Location detail modal is now full-screen, shows the location's quotation PDF (if available) instead of the image, and removes the framer-motion morph animation.
