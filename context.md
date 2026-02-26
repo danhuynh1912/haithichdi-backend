@@ -13,6 +13,8 @@ This project builds a management and booking system for a Trekking Tours Provide
 - **Infra:** Docker & Docker Compose.
 
 ### Latest Changes
+- Rewrote `frontend/README.md` and `backend/README.md` in English for recruiter-facing technical review.
+- Added comprehensive recruiter-facing README documentation for both `frontend/` and `backend/`, covering context, architecture, tech stack, setup, API contracts, and engineering trade-offs.
 - Location detail modal is now full-screen, shows the location's quotation PDF (if available) instead of the image, and removes the framer-motion morph animation.
 - Location API now exposes `quotation_file_url`; frontend Location type updated accordingly.
 - Opening a location detail sets `?name={slug}` in the URL; reloading with that query auto-focuses the matching location card and reopens the modal.
