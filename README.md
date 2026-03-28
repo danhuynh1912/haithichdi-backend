@@ -2,7 +2,7 @@
 
 ## AWS Architecture
 
-**Read the full platform design here:** [AWS Platform Architecture](/Users/apple/Downloads/dev/haithichdi/docs/AWS_PLATFORM_ARCHITECTURE.md)
+**Read the full platform design here:** [AWS Platform Architecture](docs/AWS_PLATFORM_ARCHITECTURE.md)
 
 Backend API for the `Hai Thich Di` trekking management and booking platform, built with Django and Django REST Framework.
 

@@ -1,8 +1,6 @@
 # Production Custom VPC Stack
 
-This root module manages the low-cost custom VPC production network described in:
-
-- `/Users/apple/Downloads/dev/haithichdi/localDocs/CUSTOM_VPC_MINIMAL_VI.md`
+This root module manages the active low-cost custom VPC production network.
 
 ## Purpose
 
