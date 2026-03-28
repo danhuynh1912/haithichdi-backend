@@ -1,0 +1,58 @@
+aws_region       = "ap-southeast-1"
+project_name     = "haithichdi"
+environment_name = "prod"
+
+vpc_cidr = "10.20.0.0/22"
+
+secondary_vpc_cidr_blocks = [
+  "10.20.4.0/24",
+]
+
+private_app_subnets = [
+  {
+    availability_zone = "ap-southeast-1a"
+    cidr_block        = "10.20.0.0/24"
+  },
+  {
+    availability_zone = "ap-southeast-1b"
+    cidr_block        = "10.20.1.0/24"
+  },
+]
+
+private_db_subnets = [
+  {
+    availability_zone = "ap-southeast-1a"
+    cidr_block        = "10.20.2.0/24"
+  },
+  {
+    availability_zone = "ap-southeast-1b"
+    cidr_block        = "10.20.3.0/24"
+  },
+  {
+    availability_zone = "ap-southeast-1c"
+    cidr_block        = "10.20.4.0/24"
+  },
+]
+
+db_subnet_group_name        = "haithichdi-prod-v2-db-subnet-group"
+s3_gateway_endpoint_name    = "haithichdi-prod-v2-s3-gateway-endpoint"
+ssm_interface_endpoint_name = "haithichdi-prod-v2-ssm-interface-endpoint"
+
+s3_gateway_endpoint_policy = <<-JSON
+{
+  "Version": "2008-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": "*",
+      "Action": "*",
+      "Resource": "*"
+    }
+  ]
+}
+JSON
+
+tags = {
+  Owner     = "danh"
+  ManagedBy = "terraform"
+}

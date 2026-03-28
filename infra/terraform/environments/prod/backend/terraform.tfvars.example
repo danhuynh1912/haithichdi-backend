@@ -1,0 +1,33 @@
+aws_region        = "ap-southeast-1"
+state_bucket_name = "haithichdi-prod-terraform-state-740595473620"
+project_name      = "haithichdi"
+environment_name  = "prod"
+
+network_state_key = "network/prod/terraform.tfstate"
+
+function_name        = "haithichdi-backend-api"
+function_description = ""
+image_uri            = "740595473620.dkr.ecr.ap-southeast-1.amazonaws.com/haithichdi-backend@sha256:replace-me"
+role_arn             = "arn:aws:iam::740595473620:role/service-role/haithichdi-backend-api-role-kwbhn8e7"
+role_name            = "haithichdi-backend-api-role-kwbhn8e7"
+
+memory_size            = 512
+timeout                = 20
+architectures          = ["x86_64"]
+ephemeral_storage_size = 512
+
+postgres_db   = "postgres"
+postgres_user = "postgres"
+postgres_host = "haithichdi-db.cls2iuuymeod.ap-southeast-1.rds.amazonaws.com"
+postgres_port = "5432"
+
+postgres_password_ssm_parameter_name = "/haithichdi/prod/backend/postgres_password"
+django_secret_key_ssm_parameter_name = "/haithichdi/prod/backend/django_secret_key"
+
+api_gateway_base_path = "/default"
+force_script_name     = "/default"
+
+tags = {
+  Owner     = "danh"
+  ManagedBy = "terraform"
+}

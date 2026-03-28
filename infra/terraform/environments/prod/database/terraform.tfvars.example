@@ -1,0 +1,48 @@
+aws_region        = "ap-southeast-1"
+state_bucket_name = "haithichdi-prod-terraform-state-740595473620"
+project_name      = "haithichdi"
+environment_name  = "prod"
+
+network_state_key = "network/prod/terraform.tfstate"
+
+db_instance_identifier = "haithichdi-db"
+instance_class         = "db.t3.micro"
+engine                 = "postgres"
+engine_version         = "16.12"
+master_username        = "postgres"
+
+allocated_storage     = 20
+max_allocated_storage = 1000
+storage_type          = "gp3"
+iops                  = 3000
+storage_throughput    = 125
+port                  = 5432
+
+publicly_accessible        = false
+auto_minor_version_upgrade = true
+backup_retention_period    = 7
+backup_window              = "20:41-21:11"
+maintenance_window         = "thu:16:03-thu:16:33"
+
+storage_encrypted                     = true
+kms_key_id                            = "arn:aws:kms:ap-southeast-1:740595473620:key/60e97d1e-62fa-4d28-a113-c473d34006df"
+performance_insights_enabled          = true
+performance_insights_kms_key_id       = "arn:aws:kms:ap-southeast-1:740595473620:key/60e97d1e-62fa-4d28-a113-c473d34006df"
+performance_insights_retention_period = 7
+parameter_group_name                  = "default.postgres16"
+option_group_name                     = "default:postgres-16"
+deletion_protection                   = false
+copy_tags_to_snapshot                 = true
+ca_cert_identifier                    = "rds-ca-rsa2048-g1"
+monitoring_interval                   = 0
+monitoring_role_arn                   = null
+network_type                          = "IPV4"
+multi_az                              = false
+apply_immediately                     = true
+skip_final_snapshot                   = true
+
+tags = {
+  env       = "prod"
+  Owner     = "danh"
+  ManagedBy = "terraform"
+}

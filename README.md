@@ -11,7 +11,7 @@ The backend serves two core needs:
 Business goals:
 - Manage tour capacity (slot management).
 - Prevent duplicate registrations by phone number per tour.
-- Store media and quotation PDFs via MinIO (S3-compatible storage).
+- Store media and quotation PDFs via S3-compatible storage locally and AWS S3 in production.
 
 ## 2. Recruiter Highlights
 
@@ -29,8 +29,12 @@ Engineering signals in this backend:
 - Framework: `Django 5.x`
 - API: `Django REST Framework`
 - Database: `PostgreSQL 16`
-- File/Object Storage: `MinIO` (S3 protocol)
-- Infrastructure: `Docker`, `Docker Compose`
+- File/Object Storage:
+  - local: `MinIO` (S3 protocol)
+  - production: `AWS S3` + `CloudFront`
+- Infrastructure:
+  - local: `Docker`, `Docker Compose`
+  - production: `AWS Lambda`, `API Gateway`, `RDS`, `VPC`, `S3`, `CloudFront`, `Terraform`
 
 Main dependencies in `requirements.txt`:
 - `Django`, `djangorestframework`, `django-cors-headers`
@@ -139,7 +143,7 @@ HTTP Request
   -> DRF View (ListAPIView/CreateAPIView/...)
   -> Serializer (validation + response shaping)
   -> ORM Query (models)
-  -> PostgreSQL / MinIO storage
+  -> PostgreSQL / object storage
   -> JSON Response
 ```
 
@@ -160,12 +164,16 @@ Main settings (defaults exist in code/compose):
 - `DJANGO_DEBUG` (`1` to enable debug)
 - `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD`
 - `POSTGRES_HOST`, `POSTGRES_PORT`
-- `USE_S3` (`1` to enable MinIO/S3 storage)
-- `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`
+- `USE_S3` (`1` to enable object storage)
 - `AWS_STORAGE_BUCKET_NAME`
-- `AWS_S3_ENDPOINT_URL`
-- `AWS_S3_PUBLIC_ENDPOINT_URL`
 - `AWS_S3_REGION_NAME`
+- `AWS_S3_CUSTOM_DOMAIN` or `AWS_S3_PUBLIC_BASE_URL`
+- `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` only when not using IAM roles
+- `AWS_S3_ENDPOINT_URL`, `AWS_S3_PUBLIC_ENDPOINT_URL`, `AWS_S3_ADDRESSING_STYLE` only for local MinIO / S3-compatible storage
+
+See also:
+
+- `docs/AWS_PLATFORM_ARCHITECTURE.md`
 
 ## 10. Run Locally (Without Docker)
 
@@ -245,4 +253,3 @@ backend/
 - No pagination yet on tour list endpoints.
 - No API auth/permission model yet beyond Django Admin auth.
 - Could introduce domain services if business complexity grows.
-

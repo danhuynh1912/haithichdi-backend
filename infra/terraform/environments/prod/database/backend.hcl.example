@@ -1,0 +1,4 @@
+bucket       = "haithichdi-prod-terraform-state-740595473620"
+key          = "database/prod/terraform.tfstate"
+region       = "ap-southeast-1"
+use_lockfile = true

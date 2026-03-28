@@ -1,0 +1,23 @@
+aws_region        = "ap-southeast-1"
+project_name      = "haithichdi"
+environment_name  = "prod"
+media_bucket_name = "haithichdi-prod-media"
+
+writer_role_names = [
+  "haithichdi-backend-lambda-role",
+  "haithichdi-backend-ecs-task-role",
+]
+
+cloudfront_aliases  = []
+acm_certificate_arn = null
+
+cloudfront_price_class                 = "PriceClass_100"
+abort_incomplete_multipart_upload_days = 7
+noncurrent_version_expiration_days     = 30
+force_destroy                          = false
+
+tags = {
+  Project   = "haithichdi"
+  Service   = "shared-media"
+  ManagedBy = "terraform"
+}

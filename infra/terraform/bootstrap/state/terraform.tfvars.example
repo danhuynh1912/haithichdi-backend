@@ -1,0 +1,9 @@
+aws_region        = "ap-southeast-1"
+project_name      = "haithichdi"
+environment_name  = "prod"
+state_bucket_name = "haithichdi-prod-terraform-state-740595473620"
+
+tags = {
+  Owner     = "danh"
+  ManagedBy = "terraform"
+}
