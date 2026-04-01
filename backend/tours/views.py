@@ -3,11 +3,13 @@ import unicodedata
 from django.db.models import Func, Q, TextField
 from django.db.models.functions import Lower
 from django.utils import timezone
+from rest_framework.exceptions import ValidationError
 from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView
 
-from .models import Location, Tour
+from .models import Booking, Location, Tour
 from .serializers import (
     BookingCreateSerializer,
+    BookingDetailSerializer,
     LocationSerializer,
     TourHotSerializer,
 )
@@ -88,3 +90,38 @@ class TourDetailView(RetrieveAPIView):
 
 class BookingCreateView(CreateAPIView):
     serializer_class = BookingCreateSerializer
+
+
+class BookingDetailView(RetrieveAPIView):
+    serializer_class = BookingDetailSerializer
+    queryset = Booking.objects.select_related("tour__location")
+
+
+class BookingByIdsListView(ListAPIView):
+    serializer_class = BookingDetailSerializer
+
+    def get_queryset(self):
+        ids_param = self.request.query_params.get("ids", "")
+        if not ids_param.strip():
+            return Booking.objects.none()
+
+        parsed_ids = []
+        for item in ids_param.split(","):
+            raw = item.strip()
+            if not raw:
+                continue
+            if not raw.isdigit():
+                raise ValidationError({"ids": "Danh sách ids không hợp lệ."})
+            value = int(raw)
+            if value <= 0:
+                continue
+            if value not in parsed_ids:
+                parsed_ids.append(value)
+
+        if not parsed_ids:
+            return Booking.objects.none()
+
+        if len(parsed_ids) > 50:
+            raise ValidationError({"ids": "Tối đa 50 ids mỗi request."})
+
+        return Booking.objects.filter(id__in=parsed_ids).select_related("tour__location")

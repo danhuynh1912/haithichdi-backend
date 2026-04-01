@@ -27,6 +27,15 @@ def get_required_env(name: str) -> str:
     return value
 
 
+def get_list_env(name: str, default: list[str] | None = None) -> list[str]:
+    raw = os.environ.get(name, "").strip()
+    if not raw:
+        return default[:] if default else []
+
+    values = [item.strip() for item in raw.split(",")]
+    return [item for item in values if item]
+
+
 @lru_cache(maxsize=1)
 def get_ssm_client():
     region_name = (
@@ -210,10 +219,21 @@ STORAGES = {
 
 AUTH_USER_MODEL = "accounts.User"
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "http://localhost:3001",
-]
+CORS_ALLOWED_ORIGINS = get_list_env(
+    "CORS_ALLOWED_ORIGINS",
+    default=[
+        "http://localhost:3000",
+        "http://localhost:3001",
+    ],
+)
+
+CSRF_TRUSTED_ORIGINS = get_list_env(
+    "CSRF_TRUSTED_ORIGINS",
+    default=[
+        "http://localhost:3000",
+        "http://localhost:3001",
+    ],
+)
 
 USE_S3 = get_bool_env("USE_S3")
 if USE_S3:

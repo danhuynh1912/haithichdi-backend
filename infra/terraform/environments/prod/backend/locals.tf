@@ -48,6 +48,8 @@ locals {
       AWS_S3_CUSTOM_DOMAIN            = data.terraform_remote_state.media.outputs.cloudfront_domain_name
       API_GATEWAY_BASE_PATH           = var.api_gateway_base_path
       FORCE_SCRIPT_NAME               = var.force_script_name
+      CORS_ALLOWED_ORIGINS            = join(",", var.cors_allowed_origins)
+      CSRF_TRUSTED_ORIGINS            = join(",", var.csrf_trusted_origins)
     },
     var.additional_environment_variables,
   )

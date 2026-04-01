@@ -27,6 +27,14 @@ django_secret_key_ssm_parameter_name = "/haithichdi/prod/backend/django_secret_k
 api_gateway_base_path = "/default"
 force_script_name     = "/default"
 
+cors_allowed_origins = [
+  "https://main.example.amplifyapp.com",
+]
+
+csrf_trusted_origins = [
+  "https://main.example.amplifyapp.com",
+]
+
 tags = {
   Owner     = "danh"
   ManagedBy = "terraform"

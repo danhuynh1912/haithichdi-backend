@@ -136,6 +136,18 @@ variable "force_script_name" {
   default     = "/default"
 }
 
+variable "cors_allowed_origins" {
+  description = "Allowed browser origins for Django CORS handling."
+  type        = list(string)
+  default     = []
+}
+
+variable "csrf_trusted_origins" {
+  description = "Trusted origins for Django CSRF handling."
+  type        = list(string)
+  default     = []
+}
+
 variable "tracing_mode" {
   description = "Lambda tracing mode."
   type        = string

@@ -2,6 +2,12 @@ from rest_framework import serializers
 
 from .models import Booking, Location, Tour
 
+BOOKING_STATUS_LABELS_VI = {
+    Booking.Status.PENDING: "Chờ xác nhận",
+    Booking.Status.CONFIRMED: "Đã xác nhận",
+    Booking.Status.CANCELLED: "Đã hủy",
+}
+
 
 class LocationSerializer(serializers.ModelSerializer):
     full_image_url = serializers.SerializerMethodField()
@@ -107,3 +113,36 @@ class BookingCreateSerializer(serializers.ModelSerializer):
                     {"phone": "Số điện thoại đã đăng ký tour này."}
                 )
         return attrs
+
+
+class BookingTourSummarySerializer(serializers.ModelSerializer):
+    location = LocationSerializer(read_only=True)
+
+    class Meta:
+        model = Tour
+        fields = ("id", "title", "start_date", "end_date", "location")
+
+
+class BookingDetailSerializer(serializers.ModelSerializer):
+    tour = BookingTourSummarySerializer(read_only=True)
+    status_label = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Booking
+        fields = (
+            "id",
+            "tour",
+            "full_name",
+            "phone",
+            "email",
+            "note",
+            "medal_name",
+            "dob",
+            "citizen_id",
+            "status",
+            "status_label",
+            "created_at",
+        )
+
+    def get_status_label(self, obj: Booking) -> str:
+        return BOOKING_STATUS_LABELS_VI.get(obj.status, obj.get_status_display())
