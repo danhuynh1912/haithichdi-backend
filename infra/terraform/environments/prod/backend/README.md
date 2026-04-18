@@ -15,7 +15,22 @@ This root exists so the team can:
 - Lambda environment variables
 - Lambda VPC configuration sourced from a target network remote state
 - attachment of the media writer policy to the Lambda execution role
-- attachment of the SSM Parameter Store read policy to the Lambda execution role
+- optional attachment of the SSM Parameter Store read policy to the Lambda execution role
+
+## Secret delivery modes
+
+This stack supports two runtime secret modes:
+
+- `runtime_use_ssm_parameter_store = true`: Lambda reads secrets from SSM at runtime.
+- `runtime_use_ssm_parameter_store = false` + `inject_runtime_secrets_from_ssm = true`:
+  Terraform reads SecureString values from SSM during apply and injects
+  `POSTGRES_PASSWORD` + `DJANGO_SECRET_KEY` directly into Lambda environment variables.
+
+For cost optimization with private subnets, apply backend first with direct secret
+injection, then disable the SSM interface endpoint in the network stack.
+
+This root also enforces runtime secret source validation so an apply fails fast
+if no usable secret source is configured.
 
 ## Important caution
 

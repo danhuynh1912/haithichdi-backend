@@ -20,8 +20,8 @@ It exists so the team can:
 - one shared app route table
 - one shared DB route table
 - one S3 gateway endpoint for the app route table
-- one SSM interface endpoint
-- dedicated security groups for Lambda, RDS, and the SSM endpoint
+- optional SSM interface endpoint
+- dedicated security groups for Lambda and RDS (and SSM endpoint when enabled)
 - one DB subnet group for the future RDS migration, including the current production RDS Availability Zone
 
 ## Cost posture
@@ -31,7 +31,18 @@ This stack is intentionally cost-aware:
 - no public subnets
 - no Internet Gateway
 - no NAT Gateway
-- no extra interface endpoints beyond SSM
+- no extra interface endpoints by default
+
+## Cost optimization sequence
+
+If you disable the SSM interface endpoint (`enable_ssm_interface_endpoint = false`),
+apply the backend runtime stack first with direct secret injection to Lambda
+environment variables. Then apply this network stack.
+
+This stack enforces an explicit safety flag:
+`confirm_backend_runtime_direct_secrets_cutover = true`.
+
+Applying network first can break runtime secret reads for cold starts.
 
 ## Important caution
 

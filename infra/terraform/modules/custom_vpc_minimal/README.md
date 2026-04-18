@@ -10,8 +10,8 @@ Reusable Terraform module for a cost-aware custom VPC that fits the current Hai 
 - one shared private app route table
 - one shared private DB route table
 - S3 gateway endpoint for the app route table
-- one SSM interface endpoint across the private app subnets
-- dedicated security groups for Lambda, RDS, and the SSM endpoint
+- optional SSM interface endpoint across the private app subnets
+- dedicated security groups for Lambda and RDS (and SSM endpoint when enabled)
 - one DB subnet group for the future RDS migration
 
 ## Design goals
@@ -21,7 +21,7 @@ Reusable Terraform module for a cost-aware custom VPC that fits the current Hai 
 - open only the paths the current application needs:
   - Lambda -> RDS
   - Lambda -> S3
-  - Lambda -> SSM
+  - Lambda -> SSM (optional)
 
 ## What it intentionally does not create
 

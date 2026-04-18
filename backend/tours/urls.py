@@ -6,6 +6,7 @@ from .views import (
     BookingDetailView,
     HotTourListView,
     LocationListView,
+    RelatedToursListView,
     TourDetailView,
     TourListView,
 )
@@ -14,6 +15,7 @@ urlpatterns = [
     path("tours/hot/", HotTourListView.as_view(), name="hot-tours"),
     path("tours/", TourListView.as_view(), name="tour-list"),
     path("tours/<int:pk>/", TourDetailView.as_view(), name="tour-detail"),
+    path("tours/<int:pk>/related/", RelatedToursListView.as_view(), name="tour-related"),
     path("bookings/", BookingCreateView.as_view(), name="booking-create"),
     path("bookings/by-ids/", BookingByIdsListView.as_view(), name="booking-by-ids"),
     path("bookings/<int:pk>/", BookingDetailView.as_view(), name="booking-detail"),

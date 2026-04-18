@@ -157,6 +157,8 @@ resource "aws_vpc_security_group_ingress_rule" "rds_from_lambda" {
 }
 
 resource "aws_security_group" "ssm_interface_endpoint" {
+  count = var.enable_ssm_interface_endpoint ? 1 : 0
+
   name        = "${var.project_name}-${var.environment_name}-v2-ssm-vpce-sg"
   description = "Allows Lambda runtimes to reach the SSM interface endpoint over HTTPS"
   vpc_id      = aws_vpc.this.id
@@ -187,11 +189,13 @@ resource "aws_security_group" "ssm_interface_endpoint" {
 }
 
 resource "aws_vpc_endpoint" "ssm_interface" {
+  count = var.enable_ssm_interface_endpoint ? 1 : 0
+
   vpc_id              = aws_vpc.this.id
   service_name        = "com.amazonaws.${var.aws_region}.ssm"
   vpc_endpoint_type   = "Interface"
   subnet_ids          = values(aws_subnet.private_app)[*].id
-  security_group_ids  = [aws_security_group.ssm_interface_endpoint.id]
+  security_group_ids  = [aws_security_group.ssm_interface_endpoint[0].id]
   private_dns_enabled = true
 
   tags = merge(

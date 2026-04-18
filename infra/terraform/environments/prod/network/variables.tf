@@ -54,6 +54,20 @@ variable "s3_gateway_endpoint_name" {
 variable "ssm_interface_endpoint_name" {
   description = "Name tag for the SSM interface endpoint."
   type        = string
+  default     = null
+  nullable    = true
+}
+
+variable "enable_ssm_interface_endpoint" {
+  description = "Whether to create the SSM interface endpoint in the app subnets."
+  type        = bool
+  default     = true
+}
+
+variable "confirm_backend_runtime_direct_secrets_cutover" {
+  description = "Safety flag required when disabling the SSM interface endpoint."
+  type        = bool
+  default     = false
 }
 
 variable "s3_gateway_endpoint_policy" {

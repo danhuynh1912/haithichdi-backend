@@ -1,6 +1,7 @@
 from django.contrib import admin
 
-from .models import Booking, Location, Tour, TourImage
+from .models import Booking, Location, Tour, TourImage, TourItineraryDay
+from .services import sync_itinerary_days_for_tour
 
 
 class TourImageInline(admin.TabularInline):
@@ -8,10 +9,17 @@ class TourImageInline(admin.TabularInline):
     extra = 1
 
 
+class TourItineraryDayInline(admin.StackedInline):
+    model = TourItineraryDay
+    extra = 0
+    fields = ("day_number", "title", "content_md")
+
+
 @admin.register(Tour)
 class TourAdmin(admin.ModelAdmin):
     list_display = (
         "title",
+        "price",
         "location",
         "start_date",
         "end_date",
@@ -22,8 +30,28 @@ class TourAdmin(admin.ModelAdmin):
     )
     search_fields = ("title", "location__name")
     list_filter = ("is_active",)
-    inlines = [TourImageInline]
+    inlines = [TourImageInline, TourItineraryDayInline]
     filter_horizontal = ("leaders",)
+    fields = (
+        "title",
+        "location",
+        "summary",
+        "description_md",
+        "itinerary_md",
+        "price",
+        "start_date",
+        "end_date",
+        "max_guests",
+        "leaders",
+        "is_active",
+    )
+
+    class Media:
+        js = ("tours/admin/tour_itinerary_days.js",)
+
+    def save_related(self, request, form, formsets, change):
+        super().save_related(request, form, formsets, change)
+        sync_itinerary_days_for_tour(form.instance, remove_out_of_range=True)
 
 
 @admin.register(Booking)

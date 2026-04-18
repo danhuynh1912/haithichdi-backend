@@ -23,6 +23,8 @@ postgres_port = "5432"
 
 postgres_password_ssm_parameter_name = "/haithichdi/prod/backend/postgres_password"
 django_secret_key_ssm_parameter_name = "/haithichdi/prod/backend/django_secret_key"
+runtime_use_ssm_parameter_store      = false
+inject_runtime_secrets_from_ssm      = true
 
 api_gateway_base_path = "/default"
 force_script_name     = "/default"

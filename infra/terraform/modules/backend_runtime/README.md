@@ -9,7 +9,7 @@ This module manages the production Lambda runtime configuration for the Django b
 - VPC config
 - memory, timeout, ephemeral storage
 - IAM attachment to the media writer policy
-- IAM attachment to read named SecureString parameters from SSM Parameter Store
+- optional IAM attachment to read named SecureString parameters from SSM Parameter Store
 
 ## Deliberate boundary
 

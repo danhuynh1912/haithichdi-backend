@@ -37,6 +37,8 @@ private_db_subnets = [
 db_subnet_group_name        = "haithichdi-prod-v2-db-subnet-group"
 s3_gateway_endpoint_name    = "haithichdi-prod-v2-s3-gateway-endpoint"
 ssm_interface_endpoint_name = "haithichdi-prod-v2-ssm-interface-endpoint"
+enable_ssm_interface_endpoint = false
+confirm_backend_runtime_direct_secrets_cutover = true
 
 s3_gateway_endpoint_policy = <<-JSON
 {

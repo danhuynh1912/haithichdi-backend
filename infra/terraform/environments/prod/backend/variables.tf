@@ -117,11 +117,56 @@ variable "postgres_port" {
 variable "postgres_password_ssm_parameter_name" {
   description = "SSM Parameter Store name that holds the PostgreSQL password."
   type        = string
+  default     = null
+  nullable    = true
+
+  validation {
+    condition = (
+      var.runtime_use_ssm_parameter_store == false && var.inject_runtime_secrets_from_ssm == false
+      || (
+        var.postgres_password_ssm_parameter_name != null
+        && trimspace(var.postgres_password_ssm_parameter_name) != ""
+      )
+    )
+    error_message = "Set postgres_password_ssm_parameter_name when runtime_use_ssm_parameter_store or inject_runtime_secrets_from_ssm is true."
+  }
 }
 
 variable "django_secret_key_ssm_parameter_name" {
   description = "SSM Parameter Store name that holds DJANGO_SECRET_KEY."
   type        = string
+  default     = null
+  nullable    = true
+
+  validation {
+    condition = (
+      var.runtime_use_ssm_parameter_store == false && var.inject_runtime_secrets_from_ssm == false
+      || (
+        var.django_secret_key_ssm_parameter_name != null
+        && trimspace(var.django_secret_key_ssm_parameter_name) != ""
+      )
+    )
+    error_message = "Set django_secret_key_ssm_parameter_name when runtime_use_ssm_parameter_store or inject_runtime_secrets_from_ssm is true."
+  }
+}
+
+variable "runtime_use_ssm_parameter_store" {
+  description = "Whether Lambda reads secrets from SSM Parameter Store at runtime."
+  type        = bool
+  default     = true
+}
+
+variable "inject_runtime_secrets_from_ssm" {
+  description = "Whether Terraform reads secure values from SSM and injects them directly into Lambda environment variables."
+  type        = bool
+  default     = false
+}
+
+variable "runtime_secret_environment_variables" {
+  description = "Direct secret environment variables injected into Lambda runtime (for example DJANGO_SECRET_KEY, POSTGRES_PASSWORD)."
+  type        = map(string)
+  default     = {}
+  sensitive   = true
 }
 
 variable "api_gateway_base_path" {

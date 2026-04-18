@@ -1,13 +1,16 @@
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.db import models
 
 
 class Tour(models.Model):
     title = models.CharField(max_length=200)
     summary = models.TextField(blank=True)
+    description_md = models.TextField(blank=True, help_text="Markdown description")
     itinerary_md = models.TextField(help_text="Markdown itinerary")
     start_date = models.DateField(null=True, blank=True)
     end_date = models.DateField(null=True, blank=True)
+    price = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
     location = models.ForeignKey(
         "Location",
         related_name="tours",
@@ -30,6 +33,11 @@ class Tour(models.Model):
     def __str__(self) -> str:
         return self.title
 
+    def clean(self):
+        super().clean()
+        if self.start_date and self.end_date and self.end_date < self.start_date:
+            raise ValidationError({"end_date": "Ngày kết thúc phải lớn hơn hoặc bằng ngày bắt đầu."})
+
     @property
     def booked_count(self) -> int:
         return self.bookings.count()
@@ -37,6 +45,26 @@ class Tour(models.Model):
     @property
     def slots_left(self) -> int:
         return max(self.max_guests - self.booked_count, 0)
+
+
+class TourItineraryDay(models.Model):
+    tour = models.ForeignKey(
+        Tour,
+        related_name="itinerary_days",
+        on_delete=models.CASCADE,
+    )
+    day_number = models.PositiveIntegerField(help_text="Day index. Day 0 = one day before tour start")
+    title = models.CharField(max_length=255, blank=True)
+    content_md = models.TextField(blank=True, help_text="Markdown itinerary content")
+
+    class Meta:
+        ordering = ["day_number"]
+        constraints = [
+            models.UniqueConstraint(fields=["tour", "day_number"], name="uniq_tour_itinerary_day"),
+        ]
+
+    def __str__(self) -> str:
+        return f"{self.tour.title} - Day {self.day_number}"
 
 
 class Location(models.Model):

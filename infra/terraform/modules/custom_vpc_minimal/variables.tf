@@ -63,6 +63,25 @@ variable "s3_gateway_endpoint_name" {
 variable "ssm_interface_endpoint_name" {
   description = "Name tag for the SSM interface endpoint."
   type        = string
+  default     = null
+  nullable    = true
+
+  validation {
+    condition = (
+      var.enable_ssm_interface_endpoint == false
+      || (
+        var.ssm_interface_endpoint_name != null
+        && trimspace(var.ssm_interface_endpoint_name) != ""
+      )
+    )
+    error_message = "Set ssm_interface_endpoint_name when enable_ssm_interface_endpoint is true."
+  }
+}
+
+variable "enable_ssm_interface_endpoint" {
+  description = "Whether to create the SSM interface endpoint and its security group."
+  type        = bool
+  default     = true
 }
 
 variable "s3_gateway_endpoint_policy" {

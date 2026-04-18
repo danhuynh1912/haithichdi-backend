@@ -11,6 +11,7 @@ from .serializers import (
     BookingCreateSerializer,
     BookingDetailSerializer,
     LocationSerializer,
+    TourDetailSerializer,
     TourHotSerializer,
 )
 
@@ -84,8 +85,28 @@ class Unaccent(Func):
 
 
 class TourDetailView(RetrieveAPIView):
+    serializer_class = TourDetailSerializer
+    queryset = (
+        Tour.objects.filter(is_active=True)
+        .prefetch_related("images", "itinerary_days")
+        .select_related("location")
+    )
+
+
+class RelatedToursListView(ListAPIView):
     serializer_class = TourHotSerializer
-    queryset = Tour.objects.filter(is_active=True).prefetch_related("images").select_related("location")
+
+    def get_queryset(self):
+        tour_id = self.kwargs["pk"]
+        limit = _parse_related_limit(self.request.query_params.get("limit"))
+
+        return (
+            Tour.objects.filter(is_active=True)
+            .exclude(id=tour_id)
+            .prefetch_related("images")
+            .select_related("location")
+            .order_by("start_date", "end_date", "id")[:limit]
+        )
 
 
 class BookingCreateView(CreateAPIView):
@@ -125,3 +146,18 @@ class BookingByIdsListView(ListAPIView):
             raise ValidationError({"ids": "Tối đa 50 ids mỗi request."})
 
         return Booking.objects.filter(id__in=parsed_ids).select_related("tour__location")
+
+
+def _parse_related_limit(raw_limit: str | None) -> int:
+    if raw_limit is None:
+        return 12
+    raw_limit = raw_limit.strip()
+    if not raw_limit:
+        return 12
+    if not raw_limit.isdigit():
+        raise ValidationError({"limit": "Limit không hợp lệ."})
+
+    limit = int(raw_limit)
+    if limit <= 0:
+        raise ValidationError({"limit": "Limit phải lớn hơn 0."})
+    return min(limit, 24)

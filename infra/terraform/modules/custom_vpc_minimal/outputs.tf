@@ -34,8 +34,8 @@ output "rds_security_group_id" {
 }
 
 output "ssm_interface_endpoint_security_group_id" {
-  description = "Security group ID attached to the SSM interface endpoint."
-  value       = aws_security_group.ssm_interface_endpoint.id
+  description = "Security group ID attached to the SSM interface endpoint when enabled."
+  value       = var.enable_ssm_interface_endpoint ? aws_security_group.ssm_interface_endpoint[0].id : null
 }
 
 output "db_subnet_group_name" {
@@ -49,6 +49,6 @@ output "s3_gateway_endpoint_id" {
 }
 
 output "ssm_interface_endpoint_id" {
-  description = "SSM interface endpoint ID."
-  value       = aws_vpc_endpoint.ssm_interface.id
+  description = "SSM interface endpoint ID when enabled."
+  value       = var.enable_ssm_interface_endpoint ? aws_vpc_endpoint.ssm_interface[0].id : null
 }

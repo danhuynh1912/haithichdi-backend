@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
-from .models import Booking, Location, Tour
+from .models import Booking, Location, Tour, TourImage, TourItineraryDay
+from .services import get_itinerary_date_by_day
 
 BOOKING_STATUS_LABELS_VI = {
     Booking.Status.PENDING: "Chờ xác nhận",
@@ -56,11 +57,49 @@ class TourHotSerializer(serializers.ModelSerializer):
 
     def get_image_url(self, obj: Tour) -> str | None:
         image = obj.images.first()
-        if image is None:
+        return _resolve_tour_image_url(image)
+
+
+class TourImageSerializer(serializers.ModelSerializer):
+    image_url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = TourImage
+        fields = ("id", "image_url", "caption", "sort_order")
+
+    def get_image_url(self, obj: TourImage) -> str | None:
+        return _resolve_tour_image_url(obj)
+
+
+class TourItineraryDaySerializer(serializers.ModelSerializer):
+    date = serializers.SerializerMethodField()
+
+    class Meta:
+        model = TourItineraryDay
+        fields = ("day_number", "date", "title", "content_md")
+
+    def get_date(self, obj: TourItineraryDay) -> str | None:
+        day_date = get_itinerary_date_by_day(obj.tour, obj.day_number)
+        if day_date is None:
             return None
-        if image.image:
-            return image.image.url
-        return image.image_url or None
+        return day_date.isoformat()
+
+
+class TourDetailSerializer(TourHotSerializer):
+    price = serializers.DecimalField(max_digits=12, decimal_places=2, required=False, allow_null=True)
+    description_md = serializers.CharField(required=False, allow_blank=True)
+    images = TourImageSerializer(many=True, read_only=True)
+    itinerary_days = TourItineraryDaySerializer(many=True, read_only=True)
+
+    class Meta(TourHotSerializer.Meta):
+        fields = TourHotSerializer.Meta.fields + (
+            "price",
+            "description_md",
+            "summary",
+            "itinerary_md",
+            "images",
+            "itinerary_days",
+        )
 
 
 class BookingCreateSerializer(serializers.ModelSerializer):
@@ -146,3 +185,11 @@ class BookingDetailSerializer(serializers.ModelSerializer):
 
     def get_status_label(self, obj: Booking) -> str:
         return BOOKING_STATUS_LABELS_VI.get(obj.status, obj.get_status_display())
+
+
+def _resolve_tour_image_url(image: TourImage | None) -> str | None:
+    if image is None:
+        return None
+    if image.image:
+        return image.image.url
+    return image.image_url or None

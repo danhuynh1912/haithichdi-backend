@@ -40,7 +40,7 @@ Implemented in this phase:
 - private S3 bucket for media objects
 - CloudFront distribution with Origin Access Control
 - IAM managed policy for backend writers
-- SSM Parameter Store SecureString secrets for backend runtime values
+- SSM Parameter Store SecureString secrets (optional runtime source; can be injected into Lambda env vars at deploy time)
 
 Legacy cleanup completed in this phase:
 

@@ -20,3 +20,17 @@ module "backend_runtime" {
   tracing_mode                 = var.tracing_mode
   tags                         = var.tags
 }
+
+check "runtime_secret_source_configured" {
+  assert {
+    condition = (
+      var.runtime_use_ssm_parameter_store
+      || var.inject_runtime_secrets_from_ssm
+      || (
+        contains(keys(var.runtime_secret_environment_variables), "POSTGRES_PASSWORD")
+        && contains(keys(var.runtime_secret_environment_variables), "DJANGO_SECRET_KEY")
+      )
+    )
+    error_message = "Runtime secret source is missing. Either keep runtime_use_ssm_parameter_store=true, set inject_runtime_secrets_from_ssm=true, or provide POSTGRES_PASSWORD and DJANGO_SECRET_KEY in runtime_secret_environment_variables."
+  }
+}

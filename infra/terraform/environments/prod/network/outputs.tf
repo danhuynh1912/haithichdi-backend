@@ -34,7 +34,7 @@ output "rds_security_group_id" {
 }
 
 output "ssm_interface_endpoint_security_group_id" {
-  description = "Security group ID attached to the SSM interface endpoint."
+  description = "Security group ID attached to the SSM interface endpoint when enabled."
   value       = module.custom_vpc_minimal.ssm_interface_endpoint_security_group_id
 }
 
@@ -49,6 +49,6 @@ output "s3_gateway_endpoint_id" {
 }
 
 output "ssm_interface_endpoint_id" {
-  description = "SSM interface endpoint ID."
+  description = "SSM interface endpoint ID when enabled."
   value       = module.custom_vpc_minimal.ssm_interface_endpoint_id
 }
