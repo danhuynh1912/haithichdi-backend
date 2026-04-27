@@ -4,11 +4,37 @@ from datetime import date
 from decimal import Decimal
 from uuid import uuid4
 
-from tours.models import Location, Tour
+from tours.models import Location, LocationAudience, Tour
 
 
-def create_location(name: str | None = None, elevation_m: int = 3046) -> Location:
-    return Location.objects.create(name=name or f"Ky Quan San {uuid4().hex[:6]}", elevation_m=elevation_m)
+def create_location(
+    name: str | None = None,
+    elevation_m: int = 3046,
+    **kwargs,
+) -> Location:
+    return Location.objects.create(
+        name=name or f"Ky Quan San {uuid4().hex[:6]}",
+        elevation_m=elevation_m,
+        **kwargs,
+    )
+
+
+def create_location_audience(
+    *,
+    code: str = LocationAudience.Code.BEGINNER,
+    title: str = "Người mới",
+    description: str = "Lộ trình phù hợp để làm quen với trekking.",
+    sort_order: int = 0,
+) -> LocationAudience:
+    audience, _ = LocationAudience.objects.update_or_create(
+        code=code,
+        defaults={
+            "title": title,
+            "description": description,
+            "sort_order": sort_order,
+        },
+    )
+    return audience
 
 
 def create_tour(

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Booking, Location, Tour, TourImage, TourItineraryDay
+from .models import Booking, Location, LocationAudience, Tour, TourImage, TourItineraryDay
 from .services import get_itinerary_date_by_day
 
 BOOKING_STATUS_LABELS_VI = {
@@ -26,9 +26,7 @@ class LocationSerializer(serializers.ModelSerializer):
         )
 
     def get_full_image_url(self, obj: Location) -> str | None:
-        if obj.image:
-            return obj.image.url
-        return obj.image_url or None
+        return _resolve_location_image_url(obj)
 
     def get_quotation_file_url(self, obj: Location) -> str | None:
         if obj.quotation_file:
@@ -58,6 +56,108 @@ class TourHotSerializer(serializers.ModelSerializer):
     def get_image_url(self, obj: Tour) -> str | None:
         image = obj.images.first()
         return _resolve_tour_image_url(image)
+
+
+class LocationAudienceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = LocationAudience
+        fields = ("id", "code", "title", "description")
+
+
+class HomeFeaturedRouteSerializer(serializers.ModelSerializer):
+    display_name = serializers.SerializerMethodField()
+    subtitle = serializers.SerializerMethodField()
+    summary = serializers.SerializerMethodField()
+    image_url = serializers.SerializerMethodField()
+    suitable_audiences = LocationAudienceSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Location
+        fields = (
+            "id",
+            "name",
+            "display_name",
+            "subtitle",
+            "summary",
+            "image_url",
+            "suitable_audiences",
+        )
+
+    def get_display_name(self, obj: Location) -> str:
+        display_name = obj.home_display_name.strip()
+        return display_name or obj.name
+
+    def get_subtitle(self, obj: Location) -> str:
+        return obj.home_subtitle.strip()
+
+    def get_summary(self, obj: Location) -> str:
+        summary = obj.home_feature_summary.strip()
+        if summary:
+            return summary
+        return obj.description.strip()
+
+    def get_image_url(self, obj: Location) -> str | None:
+        return _resolve_location_image_url(obj)
+
+
+class HomeAudienceLocationSerializer(serializers.ModelSerializer):
+    display_name = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Location
+        fields = ("id", "name", "display_name")
+
+    def get_display_name(self, obj: Location) -> str:
+        display_name = obj.home_display_name.strip()
+        return display_name or obj.name
+
+
+class HomeHighlightAudienceSerializer(serializers.ModelSerializer):
+    locations = HomeAudienceLocationSerializer(many=True, read_only=True, source="home_locations")
+
+    class Meta:
+        model = LocationAudience
+        fields = ("id", "code", "title", "description", "locations")
+
+
+class HomeFeaturedRoutesSerializer(serializers.Serializer):
+    routes = HomeFeaturedRouteSerializer(many=True)
+    highlight_audience = HomeHighlightAudienceSerializer(allow_null=True)
+
+
+class HomeMomentsGalleryImageSerializer(serializers.ModelSerializer):
+    image_url = serializers.SerializerMethodField()
+    tour_title = serializers.CharField(source="tour.title", read_only=True)
+    location_name = serializers.CharField(source="tour.location.name", read_only=True)
+    width = serializers.SerializerMethodField()
+    height = serializers.SerializerMethodField()
+
+    class Meta:
+        model = TourImage
+        fields = (
+            "id",
+            "image_url",
+            "caption",
+            "tour_title",
+            "location_name",
+            "width",
+            "height",
+        )
+
+    def get_image_url(self, obj: TourImage) -> str | None:
+        return _resolve_tour_image_url(obj)
+
+    def get_width(self, obj: TourImage) -> int | None:
+        width, _ = _resolve_tour_image_dimensions(obj)
+        return width
+
+    def get_height(self, obj: TourImage) -> int | None:
+        _, height = _resolve_tour_image_dimensions(obj)
+        return height
+
+
+class HomeMomentsGallerySerializer(serializers.Serializer):
+    images = HomeMomentsGalleryImageSerializer(many=True)
 
 
 class TourImageSerializer(serializers.ModelSerializer):
@@ -193,3 +293,19 @@ def _resolve_tour_image_url(image: TourImage | None) -> str | None:
     if image.image:
         return image.image.url
     return image.image_url or None
+
+
+def _resolve_tour_image_dimensions(image: TourImage | None) -> tuple[int | None, int | None]:
+    if image is None or not image.image:
+        return None, None
+
+    try:
+        return image.image.width, image.image.height
+    except (FileNotFoundError, OSError, ValueError):
+        return None, None
+
+
+def _resolve_location_image_url(location: Location) -> str | None:
+    if location.image:
+        return location.image.url
+    return location.image_url or None

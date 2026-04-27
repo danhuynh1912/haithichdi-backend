@@ -5,6 +5,8 @@ from .views import (
     BookingCreateView,
     BookingDetailView,
     HotTourListView,
+    HomeFeaturedRoutesView,
+    HomeMomentsGalleryView,
     LocationListView,
     RelatedToursListView,
     TourDetailView,
@@ -12,6 +14,8 @@ from .views import (
 )
 
 urlpatterns = [
+    path("home/featured-routes/", HomeFeaturedRoutesView.as_view(), name="home-featured-routes"),
+    path("home/moments-gallery/", HomeMomentsGalleryView.as_view(), name="home-moments-gallery"),
     path("tours/hot/", HotTourListView.as_view(), name="hot-tours"),
     path("tours/", TourListView.as_view(), name="tour-list"),
     path("tours/<int:pk>/", TourDetailView.as_view(), name="tour-detail"),

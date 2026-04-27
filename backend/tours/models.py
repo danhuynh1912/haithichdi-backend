@@ -1,6 +1,8 @@
 from django.conf import settings
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.db.models import Q
 
 
 class Tour(models.Model):
@@ -67,6 +69,24 @@ class TourItineraryDay(models.Model):
         return f"{self.tour.title} - Day {self.day_number}"
 
 
+class LocationAudience(models.Model):
+    class Code(models.TextChoices):
+        BEGINNER = "beginner", "Beginner"
+        INTERMEDIATE = "intermediate", "Intermediate"
+        PUSH_LIMIT = "push_limit", "Push Limit"
+
+    code = models.CharField(max_length=30, choices=Code.choices, unique=True)
+    title = models.CharField(max_length=120)
+    description = models.TextField(blank=True)
+    sort_order = models.PositiveSmallIntegerField(default=0)
+
+    class Meta:
+        ordering = ["sort_order", "id"]
+
+    def __str__(self) -> str:
+        return self.title
+
+
 class Location(models.Model):
     name = models.CharField(max_length=200, unique=True)
     elevation_m = models.PositiveIntegerField()
@@ -79,9 +99,42 @@ class Location(models.Model):
         help_text="Upload PDF quotation file",
     )
     description = models.TextField(blank=True)
+    suitable_audiences = models.ManyToManyField(
+        LocationAudience,
+        related_name="locations",
+        blank=True,
+        help_text="Suitable audiences for this location",
+    )
+    home_display_name = models.CharField(
+        max_length=200,
+        blank=True,
+        help_text="Homepage display name override",
+    )
+    home_subtitle = models.CharField(
+        max_length=200,
+        blank=True,
+        help_text="Homepage subtitle shown under the title",
+    )
+    home_feature_summary = models.TextField(
+        blank=True,
+        help_text="Homepage featured routes summary",
+    )
+    home_feature_order = models.PositiveSmallIntegerField(
+        null=True,
+        blank=True,
+        validators=[MinValueValidator(1), MaxValueValidator(4)],
+        help_text="Homepage featured routes order from 1 to 4",
+    )
 
     class Meta:
         ordering = ["name"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["home_feature_order"],
+                condition=Q(home_feature_order__isnull=False),
+                name="uniq_location_home_feature_order",
+            ),
+        ]
 
     def __str__(self) -> str:
         return f"{self.name} ({self.elevation_m}m)"

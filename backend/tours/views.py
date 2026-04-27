@@ -4,16 +4,21 @@ from django.db.models import Func, Q, TextField
 from django.db.models.functions import Lower
 from django.utils import timezone
 from rest_framework.exceptions import ValidationError
+from rest_framework.response import Response
+from rest_framework.views import APIView
 from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView
 
 from .models import Booking, Location, Tour
 from .serializers import (
     BookingCreateSerializer,
     BookingDetailSerializer,
+    HomeFeaturedRoutesSerializer,
+    HomeMomentsGallerySerializer,
     LocationSerializer,
     TourDetailSerializer,
     TourHotSerializer,
 )
+from .services import get_home_featured_routes_payload, get_home_moments_gallery_payload
 
 
 class HotTourListView(ListAPIView):
@@ -37,6 +42,20 @@ class HotTourListView(ListAPIView):
 class LocationListView(ListAPIView):
     queryset = Location.objects.all()
     serializer_class = LocationSerializer
+
+
+class HomeFeaturedRoutesView(APIView):
+    def get(self, request):
+        payload = get_home_featured_routes_payload()
+        serializer = HomeFeaturedRoutesSerializer(payload)
+        return Response(serializer.data)
+
+
+class HomeMomentsGalleryView(APIView):
+    def get(self, request):
+        payload = get_home_moments_gallery_payload()
+        serializer = HomeMomentsGallerySerializer(payload)
+        return Response(serializer.data)
 
 
 class TourListView(ListAPIView):

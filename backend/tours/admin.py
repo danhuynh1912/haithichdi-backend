@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Booking, Location, Tour, TourImage, TourItineraryDay
+from .models import Booking, Location, LocationAudience, Tour, TourImage, TourItineraryDay
 from .services import sync_itinerary_days_for_tour
 
 
@@ -77,5 +77,26 @@ class TourImageAdmin(admin.ModelAdmin):
 
 @admin.register(Location)
 class LocationAdmin(admin.ModelAdmin):
-    list_display = ("name", "elevation_m", "image", "image_url")
+    list_display = ("name", "home_feature_order", "elevation_m", "image", "image_url")
     search_fields = ("name",)
+    filter_horizontal = ("suitable_audiences",)
+    fields = (
+        "name",
+        "elevation_m",
+        "description",
+        "image",
+        "image_url",
+        "quotation_file",
+        "suitable_audiences",
+        "home_display_name",
+        "home_subtitle",
+        "home_feature_summary",
+        "home_feature_order",
+    )
+
+
+@admin.register(LocationAudience)
+class LocationAudienceAdmin(admin.ModelAdmin):
+    list_display = ("title", "code", "sort_order")
+    ordering = ("sort_order", "id")
+    search_fields = ("title", "code")

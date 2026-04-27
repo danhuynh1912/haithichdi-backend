@@ -6,7 +6,7 @@ from decimal import Decimal
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 
-from .factories import create_tour
+from .factories import create_location, create_tour
 
 
 class TourModelTests(TestCase):
@@ -22,3 +22,14 @@ class TourModelTests(TestCase):
         refreshed = type(tour).objects.get(pk=tour.pk)
         self.assertEqual(refreshed.price, Decimal("2490000.00"))
         self.assertEqual(refreshed.description_md, "## Mô tả tour")
+
+
+class LocationModelTests(TestCase):
+    def test_home_feature_order_must_be_between_one_and_four(self):
+        location = create_location(
+            name="Ta Xua",
+            home_feature_order=5,
+        )
+
+        with self.assertRaises(ValidationError):
+            location.full_clean()
